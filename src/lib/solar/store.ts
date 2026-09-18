@@ -1,10 +1,13 @@
 import { create } from "zustand";
+import type { GroundCut } from "./astrocartography";
+import type { Geo } from "./astrocartography";
 
-export type Mode = "portrait" | "orbits" | "void" | "time" | "edge" | "sky";
+export type Mode = "portrait" | "orbits" | "void" | "time" | "edge" | "sky" | "ground";
 export type CalendarCut = "nature" | "gregorian" | "fixed13" | "roman";
 export type SkyCut = "tropical" | "stars" | "both";
 export type MonthCut = "gregorian" | "fixed13" | "roman";
 export type NumenCut = "nine" | "week" | "square";
+export type { GroundCut };
 
 export const MODES: { id: Mode; label: string; line: string }[] = [
   { id: "portrait", label: "Family", line: "True sizes. Distances collapsed." },
@@ -13,6 +16,7 @@ export const MODES: { id: Mode; label: string; line: string }[] = [
   { id: "time", label: "Time", line: "Spin, Moon, year. Calendars as cuts." },
   { id: "edge", label: "Edge", line: "Logarithm of the Sun’s reach." },
   { id: "sky", label: "Signs", line: "Earth in the middle. Numbers sit above the months." },
+  { id: "ground", label: "Ground", line: "If you were born in ___ on _____, you should go to _____." },
 ];
 
 type SolarState = {
@@ -28,6 +32,11 @@ type SolarState = {
   skyCut: SkyCut;
   monthCut: MonthCut;
   numenCut: NumenCut;
+  groundCut: GroundCut;
+  pin: Geo | null;
+  placeName: string | null;
+  lookAt: Geo | null;
+  lookNonce: number;
   hoverLabel: { id: string; x: number; y: number } | null;
   about: boolean;
   enter: () => void;
@@ -44,27 +53,41 @@ type SolarState = {
   setSkyCut: (c: SkyCut) => void;
   setMonthCut: (c: MonthCut) => void;
   setNumenCut: (c: NumenCut) => void;
+  setGroundCut: (c: GroundCut) => void;
+  setPin: (p: Geo | null) => void;
+  setPlace: (name: string | null, geo: Geo | null) => void;
   setHoverLabel: (h: { id: string; x: number; y: number } | null) => void;
   setAbout: (v: boolean) => void;
 };
 
 export const useSolar = create<SolarState>((set) => ({
   entered: true,
-  mode: "sky",
+  mode: "ground",
   selectedId: "sun",
   focusNonce: 0,
-  simDays: 80,
+  simDays: 171.5,
   speed: 4,
-  paused: false,
+  paused: true,
   enhanced: false,
   calendarCut: "nature",
   skyCut: "tropical",
   monthCut: "gregorian",
   numenCut: "nine",
+  groundCut: "four",
+  pin: null,
+  placeName: null,
+  lookAt: null,
+  lookNonce: 0,
   hoverLabel: null,
   about: false,
   enter: () => set({ entered: true, about: false }),
-  setMode: (mode) => set({ mode, hoverLabel: null, selectedId: mode === "sky" ? "sun" : "earth" }),
+  setMode: (mode) =>
+    set((s) => ({
+      mode,
+      hoverLabel: null,
+      selectedId: mode === "sky" || mode === "ground" ? "sun" : "earth",
+      paused: mode === "ground" ? true : s.paused,
+    })),
   setSelected: (selectedId) => set({ selectedId }),
   selectAndFocus: (selectedId) =>
     set((s) => ({ selectedId, focusNonce: s.focusNonce + 1 })),
@@ -79,6 +102,15 @@ export const useSolar = create<SolarState>((set) => ({
   setSkyCut: (skyCut) => set({ skyCut }),
   setMonthCut: (monthCut) => set({ monthCut }),
   setNumenCut: (numenCut) => set({ numenCut }),
+  setGroundCut: (groundCut) => set({ groundCut }),
+  setPin: (pin) => set({ pin, placeName: null }),
+  setPlace: (placeName, geo) =>
+    set((s) => ({
+      placeName,
+      pin: geo ?? s.pin,
+      lookAt: geo,
+      lookNonce: geo ? s.lookNonce + 1 : s.lookNonce,
+    })),
   setHoverLabel: (hoverLabel) => set({ hoverLabel }),
   setAbout: (about) => set({ about }),
 }));

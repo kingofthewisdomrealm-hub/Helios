@@ -1,8 +1,11 @@
 import { CircleHelp, Pause, Play, SunMedium } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { SignedOut, UserButton } from "@/lib/auth/gates";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { BODIES, bodyById, LIGHT_MINUTES_PER_AU, TROPICAL_YEAR } from "@/lib/solar/bodies";
 import { MODES, useSolar } from "@/lib/solar/store";
 import { CalendarPanel } from "./CalendarPanel";
+import { GroundReadout } from "./GroundStage";
 import { SkyReadout } from "./SkyStage";
 
 export function Overlay() {
@@ -30,10 +33,13 @@ export function Overlay() {
               ? "True diameters. Space between them is a lie."
               : mode === "sky"
                 ? "Nine digits above the months. The pairing is a name map."
-                : "Drag to turn · scroll to close in"}
+                : mode === "ground"
+                  ? "If you were born in ___ on _____, you should go to _____."
+                  : "Drag to turn · scroll to close in"}
           </p>
         </div>
         <div className="pointer-events-auto flex items-center gap-2">
+          <AuthSlot />
           <Link
             to="/reference"
             className="flex size-11 items-center justify-center rounded-md border border-border bg-bg-elevated text-muted"
@@ -63,6 +69,8 @@ export function Overlay() {
         <div className="pointer-events-auto w-full max-w-md space-y-3 sm:w-[280px]">
           {mode === "sky" ? (
             <SkyReadout />
+          ) : mode === "ground" ? (
+            <GroundReadout />
           ) : (
             body && (
             <article className="rounded-lg border border-border bg-bg-elevated/92 p-3">
@@ -150,6 +158,30 @@ export function Overlay() {
         </div>
       )}
     </div>
+  );
+}
+
+function AuthSlot() {
+  const { user, isPending } = useCurrentUserState();
+  if (isPending) {
+    return <div className="size-11 animate-pulse rounded-md border border-border bg-bg-elevated" />;
+  }
+  if (user) {
+    return (
+      <div className="h-11 max-w-[8.5rem] overflow-hidden sm:max-w-[12rem]">
+        <UserButton />
+      </div>
+    );
+  }
+  return (
+    <SignedOut>
+      <Link
+        to="/login"
+        className="flex h-11 items-center rounded-md border border-border bg-bg-elevated px-3 text-xs text-muted hover:text-fg"
+      >
+        Sign in
+      </Link>
+    </SignedOut>
   );
 }
 

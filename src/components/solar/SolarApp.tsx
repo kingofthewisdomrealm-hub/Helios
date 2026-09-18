@@ -3,6 +3,7 @@ import { useSolar } from "@/lib/solar/store";
 import { Intro, Overlay } from "./Overlay";
 import { SolarCanvas } from "./SolarCanvas";
 import { FamilyStage } from "./FamilyStage";
+import { GroundStage } from "./GroundStage";
 import { SkyStage } from "./SkyStage";
 
 export function SolarApp() {
@@ -42,6 +43,7 @@ export function SolarApp() {
         Digit4: "time",
         Digit5: "edge",
         Digit6: "sky",
+        Digit7: "ground",
       };
       if (map[e.code]) setMode(map[e.code]);
     };
@@ -49,13 +51,14 @@ export function SolarApp() {
     return () => window.removeEventListener("keydown", onKey);
   }, [setMode, togglePaused]);
 
-  const hideCanvas = mode === "portrait" || mode === "sky";
+  const hideCanvas = mode === "portrait" || mode === "sky" || mode === "ground";
 
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-bg">
       <SolarCanvas hidden={hideCanvas} />
       {mode === "portrait" && <FamilyStage />}
       {mode === "sky" && <SkyStage />}
+      {mode === "ground" && <GroundStage />}
       <Overlay />
       {about && (
         <div className="absolute inset-0 z-20 overflow-y-auto bg-bg/80">

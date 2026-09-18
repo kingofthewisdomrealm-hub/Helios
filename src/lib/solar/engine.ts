@@ -136,7 +136,7 @@ export class HeliosEngine {
   }
 
   setMode(mode: Mode) {
-    if (mode === "sky") return;
+    if (mode === "sky" || mode === "ground") return;
     if (mode === this.mode) return;
     this.mode = mode;
     this.build(mode);

@@ -38,6 +38,13 @@
     background: var(--color-bg);
     color: var(--color-fg);
     font-family: var(--font-sans);
+    color-scheme: dark;
+  }
+
+  input[type="date"],
+  input[type="time"],
+  input[type="text"] {
+    color-scheme: dark;
   }
 
   * {

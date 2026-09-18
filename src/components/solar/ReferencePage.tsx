@@ -9,6 +9,7 @@ export function ReferencePage() {
   const setSkyCut = useSolar((s) => s.setSkyCut);
   const setMonthCut = useSolar((s) => s.setMonthCut);
   const setNumenCut = useSolar((s) => s.setNumenCut);
+  const setGroundCut = useSolar((s) => s.setGroundCut);
 
   function open(entry: RefEntry) {
     const g = entry.go;
@@ -17,6 +18,7 @@ export function ReferencePage() {
     if (g.skyCut) setSkyCut(g.skyCut);
     if (g.monthCut) setMonthCut(g.monthCut);
     if (g.numenCut) setNumenCut(g.numenCut);
+    if (g.groundCut) setGroundCut(g.groundCut);
     setMode(g.mode);
     void navigate({ to: "/" });
   }
@@ -40,10 +42,10 @@ export function ReferencePage() {
 
       <main className="mx-auto max-w-2xl px-5 py-10 pb-24">
         <h1 className="font-display text-4xl leading-[0.95] tracking-tight sm:text-5xl">
-          What it means for a life.
+          If you were born, here is what to do.
         </h1>
         <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
-          The sky is out there. This is what each cut does to a human.
+          Fill the blanks. Place. Day. Then the sentence tells you where to stand.
         </p>
         <p className="mt-3 text-[11px] tracking-wide">
           <span className="text-true">measured</span>
